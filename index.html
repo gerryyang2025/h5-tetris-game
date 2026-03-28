@@ -213,6 +213,12 @@
             box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.3);
         }
 
+        /* 幽灵方块 */
+        .cell.ghost {
+            opacity: 0.3;
+            box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.5);
+        }
+
         /* 方块颜色 - GitHub 风格 */
         .cell.I { background: linear-gradient(135deg, #58a6ff, #388bfd); }
         .cell.O { background: linear-gradient(135deg, #f0883e, #db6d28); }
@@ -281,8 +287,8 @@
         /* 左侧十字键 */
         .dpad {
             position: relative;
-            width: 130px;
-            height: 130px;
+            width: 160px;
+            height: 160px;
         }
 
         .dpad-center {
@@ -290,8 +296,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 35px;
-            height: 35px;
+            width: 45px;
+            height: 45px;
             background: #0d1117;
             border-radius: 50%;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -299,8 +305,8 @@
 
         .dpad-btn {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(180deg, #30363d 0%, #21262d 100%);
             border: none;
             border-radius: 5px;
@@ -347,8 +353,8 @@
         }
 
         .btn-rotate, .btn-action {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border: none;
             border-radius: 50%;
             cursor: pointer;
@@ -904,24 +910,40 @@
                 }
             }
 
-            // 渲染当前方块
+            // 渲染幽灵方块（半透明显示下落位置）
             if (currentPiece) {
-                renderPiece(currentPiece);
+                const ghostY = getGhostPosition(currentPiece);
+                renderPiece(currentPiece, ghostY, true);
+                // 渲染实际方块
+                renderPiece(currentPiece, currentPiece.y, false);
             }
         }
 
-        // 渲染方块
-        function renderPiece(piece) {
+        // 计算幽灵方块位置
+        function getGhostPosition(piece) {
+            let ghostY = piece.y;
+            while (!checkCollision(piece, piece.x, ghostY + 1, piece.shape)) {
+                ghostY++;
+            }
+            return ghostY;
+        }
+
+        // 渲染方块（可选择是否渲染为幽灵）
+        function renderPiece(piece, yOffset = piece.y, isGhost = false) {
             const cells = document.querySelectorAll('.game-board .cell');
             for (let r = 0; r < piece.shape.length; r++) {
                 for (let c = 0; c < piece.shape[r].length; c++) {
                     if (piece.shape[r][c]) {
-                        const y = piece.y + r;
+                        const y = yOffset + r;
                         const x = piece.x + c;
                         if (y >= 0 && y < ROWS && x >= 0 && x < COLS) {
                             const index = y * COLS + x;
                             if (cells[index]) {
-                                cells[index].classList.add('filled', piece.color);
+                                if (isGhost) {
+                                    cells[index].classList.add('ghost', piece.color);
+                                } else {
+                                    cells[index].classList.add('filled', piece.color);
+                                }
                             }
                         }
                     }

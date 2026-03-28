@@ -8,12 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- **幽灵方块视觉效果**：新增 `.cell.ghost` CSS 样式和 `getGhostPosition()` 函数，半透明显示方块下落位置
 - **音效系统增强**：新增 5 种 Web Audio API 程序化音效
   - `playMoveSound()` — 移动方块时的短促提示音
   - `playRotateSound()` — 旋转方块时的上升音
   - `playDropSound()` — 方块落地时的低沉音
   - `playClearSound()` — 消除行时的四音符旋律
   - `playGameOverSound()` — 游戏结束时下降音调
+
+### Changed
+
+- **虚拟按键尺寸增大**：十字方向键 130px→160px，按钮 40px→50px，中心圆 35px→45px
 
 ### Fixed
 
