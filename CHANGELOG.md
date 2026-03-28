@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.1] - 2026-03-29
+
+### Fixed
+
+- 修复 `togglePause` 函数重复定义问题（JavaScript 中后定义的版本覆盖先定义的版本）
+- 修复 `startGame` 函数重复定义问题
+- 修复 `gameOver` 函数重复定义问题
+- 确保暂停/音乐状态在游戏恢复时正确同步
+
+### Changed
+
+- 简化代码结构，移除冗余函数定义
+
+---
+
 ## [1.1.0] - 2026-03-28
 
 ### Added
@@ -19,12 +34,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **暂停遮罩点击恢复**：点击暂停界面可继续游戏
 - **移动端适配**：固定掌机大小，自动缩放适配不同屏幕
 - **触摸优化**：添加 touch-action 和 -webkit-tap-highlight-color
+- **内置帮助弹窗**：开始界面有玩法说明按钮，无需跳转页面
 
 ### Changed
 
 - **音乐播放**：改用 Web Audio API，点击开始游戏后自动播放
-- **方向键尺寸增大**：30px → 40px，提升触屏操作体验
+- **方向键尺寸**：30px → 40px，提升触屏操作体验
 - **配色保持**：GitHub 风格深色主题不变
+- **排行榜页面**：新增统计面板（总游戏次数、最高分数、最佳用时）
+- **排行榜页面**：前三名显示🥇🥈🥉奖牌
 
 ### Fixed
 
