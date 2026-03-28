@@ -30,9 +30,7 @@
 
 已部署到 GitHub Pages，可直接访问：
 
-**https://gerrygithub.github.io/h5-tetris-game/**
-
-> 将 `gerrygithub` 替换为你的 GitHub 用户名即可。
+**https://gerryyang2025.github.io/h5-tetris-game/**
 
 ## 操作方式
 
