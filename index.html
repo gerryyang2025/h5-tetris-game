@@ -679,12 +679,6 @@
             bgMusicAudio.loop = true;
             bgMusicAudio.volume = 0.3;
             bgMusicAudio.play().catch(e => console.log('播放背景音乐失败:', e));
-            
-            bgMusicAudio.onpause = () => {
-                if (isMusicPlaying && bgMusicAudio) {
-                    bgMusicAudio.play().catch(() => {});
-                }
-            };
         }
         
         function toggleMusic() {
@@ -702,6 +696,97 @@
                 }
                 musicBtn.classList.remove('playing');
             }
+        }
+        
+        // 播放移动音效
+        function playMoveSound() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.05);
+            } catch(e) {}
+        }
+        
+        // 播放旋转音效
+        function playRotateSound() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(550, audioCtx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
+        
+        // 播放落地音效
+        function playDropSound() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
+        
+        // 播放消除音效
+        function playClearSound() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.2);
+                osc.frequency.setValueAtTime(1047, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.4);
+            } catch(e) {}
+        }
+        
+        // 播放游戏结束音效
+        function playGameOverSound() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.5);
+            } catch(e) {}
         }
         
 
@@ -737,26 +822,19 @@
         
         // 暂停时暂停音乐
         function togglePause() {
-            console.log('togglePause called, isGameRunning:', isGameRunning, 'isPaused:', isPaused);
-            if (!isGameRunning) {
-                console.log('Game not running, returning');
-                return;
-            }
+            if (!isGameRunning) return;
             
             isPaused = !isPaused;
-            console.log('After toggle, isPaused:', isPaused);
             document.getElementById('pauseOverlay').style.display = isPaused ? 'flex' : 'none';
             
             if (isPaused) {
-                console.log('Pausing - clearing interval');
+                // 暂停游戏和音乐
                 clearInterval(gameInterval);
-                bgMusicAudio.pause();
+                if (bgMusicAudio) bgMusicAudio.pause();
             } else {
-                console.log('Resuming - starting interval');
+                // 继续游戏
                 gameInterval = setInterval(gameLoop, Math.max(100, 1000 - (level - 1) * 100));
-                if (isMusicPlaying) {
-                    bgMusicAudio.play().catch(e => {});
-                }
+                if (isMusicPlaying && bgMusicAudio) {  bgMusicAudio.play().catch(e => {}); }
             }
         }
         
@@ -767,6 +845,7 @@
             gameElapsedTime = Math.floor((Date.now() - gameStartTime) / 1000);
             saveScore(score, gameElapsedTime);
             bgMusicAudio.pause();
+            playGameOverSound();
             alert(`游戏结束！\n最终得分: ${score}\n等级: ${level}\n用时: ${formatTime(gameElapsedTime)}`);
             resetGame();
         }
@@ -956,6 +1035,7 @@
                 const points = [0, 100, 300, 500, 800];
                 score += points[linesCleared] * level;
                 document.getElementById('score').textContent = score;
+                playClearSound();
                 
                 // 升级
                 if (score >= level * 1000) {
@@ -994,6 +1074,7 @@
             if (!checkCollision(currentPiece, newX, newY, currentPiece.shape)) {
                 currentPiece.x = newX;
                 currentPiece.y = newY;
+                playMoveSound();
                 renderBoard();
             } else if (direction === 'down' || direction === 'up') {
                 // 触底，锁定方块
@@ -1031,6 +1112,7 @@
             // 如果旋转后不碰撞，应用旋转
             if (!checkCollision(currentPiece, currentPiece.x, currentPiece.y, newShape)) {
                 currentPiece.shape = newShape;
+                playRotateSound();
                 renderBoard();
             }
         }
@@ -1045,28 +1127,26 @@
             }
             
             document.getElementById('score').textContent = score;
+            playDropSound();
             lockPiece();
             renderBoard();
         }
 
         // 暂停/继续
         function togglePause() {
-            console.log('togglePause called, isGameRunning:', isGameRunning, 'isPaused:', isPaused);
-            if (!isGameRunning) {
-                console.log('Game not running, returning');
-                return;
-            }
+            if (!isGameRunning) return;
             
             isPaused = !isPaused;
-            console.log('After toggle, isPaused:', isPaused);
             document.getElementById('pauseOverlay').style.display = isPaused ? 'flex' : 'none';
             
             if (isPaused) {
-                console.log('Pausing - clearing interval');
+                // 暂停游戏和音乐
                 clearInterval(gameInterval);
+                if (bgMusicAudio) bgMusicAudio.pause();
             } else {
-                console.log('Resuming - starting interval');
+                // 继续游戏
                 gameInterval = setInterval(gameLoop, Math.max(100, 1000 - (level - 1) * 100));
+                if (isMusicPlaying && bgMusicAudio) {  bgMusicAudio.play().catch(e => {}); }
             }
         }
 

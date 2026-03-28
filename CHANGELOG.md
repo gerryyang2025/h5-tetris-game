@@ -6,16 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [1.1.1] - 2026-03-29
 
+### Added
+
+- **音效系统增强**：新增 5 种 Web Audio API 程序化音效
+  - `playMoveSound()` — 移动方块时的短促提示音
+  - `playRotateSound()` — 旋转方块时的上升音
+  - `playDropSound()` — 方块落地时的低沉音
+  - `playClearSound()` — 消除行时的四音符旋律
+  - `playGameOverSound()` — 游戏结束时下降音调
+
 ### Fixed
 
-- 修复 `togglePause` 函数重复定义问题（JavaScript 中后定义的版本覆盖先定义的版本）
-- 修复 `startGame` 函数重复定义问题
-- 修复 `gameOver` 函数重复定义问题
-- 确保暂停/音乐状态在游戏恢复时正确同步
-
-### Changed
-
-- 简化代码结构，移除冗余函数定义
+- 游戏结束时调用 `playGameOverSound()` 播放游戏结束音效
+- 方块触底时调用 `playDropSound()` 播放落地音效
 
 ---
 

@@ -14,7 +14,7 @@
   - "开始游戏" 绿色按钮
   - "玩法说明" 灰色按钮
 - 排行榜链接
-- 底部：作者信息（Gerry | v1.1）
+- 底部：作者信息（Gerry | v1.1.1）
 
 ### 3. 游戏过程中界面
 - 标题：TETRIS（蓝色小字在最上方）
@@ -115,7 +115,18 @@
 - 暂停时音乐暂停
 - 游戏结束时音乐停止
 
-### 5. 排行榜页面 (leaderboard.html)
+### 5. 音效系统
+使用 Web Audio API 程序化生成 5 种音效：
+
+| 音效函数 | 触发时机 | 音色特点 |
+|----------|----------|----------|
+| `playMoveSound()` | 左右移动方块 | 220Hz 正弦波，短促 50ms |
+| `playRotateSound()` | 旋转方块 | 440→550Hz 正弦波，上升音 100ms |
+| `playDropSound()` | 方块触底锁定 | 150→80Hz 方波，低沉 100ms |
+| `playClearSound()` | 消除一行或多行 | 523→1047Hz 方波，四音符旋律 400ms |
+| `playGameOverSound()` | 游戏结束 | 400→100Hz 锯齿波，下降音 500ms |
+
+### 6. 排行榜页面 (leaderboard.html)
 - 统计面板：总游戏次数、最高分数、最佳用时
 - 排行榜表格：显示前10名
 - 前三名显示🥇🥈🥉奖牌
@@ -147,6 +158,25 @@
 - 使用 `setInterval` 实现 1000ms 基础下落间隔
 - 等级提升后速度加快：`Math.max(100, 1000 - (level - 1) * 100)`
 - 暂停时清除 interval，恢复时重新设置
+
+### 音效系统
+使用 Web Audio API 的 `OscillatorNode` 和 `GainNode` 程序化生成音效：
+
+```javascript
+function playRotateSound() {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+    osc.frequency.setValueAtTime(550, audioCtx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.1);
+}
+```
 
 ### 方块系统
 - 7 种标准方块形状（I、O、T、S、Z、J、L）
